@@ -7,7 +7,9 @@ import Banco.ContaEmpresa;
 import Banco.ContaPersoal;
 import Persoa.Persoa;
 import Utils.BancoException;
+import Utils.CancelException;
 import Utils.Error;
+import Utils.Inputs;
 import Utils.Valida;
 import java.util.Scanner;
 
@@ -95,67 +97,63 @@ public class Principal {
                 }
             } catch (BancoException ex) {
                 System.out.println(ex.getCodigo());
+            } catch (CancelException ex) {
+                System.out.println("Operacion cancelada polo usuario.");
             }
         } while (opt != 's');
     }
 
-    private Persoa novaPersoa() {
+    private Persoa novaPersoa() throws CancelException {
         String dni = null;
         String nome = null;
         String apelidos = null;
         Persoa p = null;
-        boolean sigue = true;
+        boolean sigue = false;
         do {
             try {
-                System.out.println("Introduce os datos do cliente.");
-                System.out.println("Nome.");
-                nome = lec.nextLine();
-                System.out.println("Apelidos.");
-                apelidos = lec.nextLine();
-                System.out.println("DNI.");
-                dni = lec.nextLine();
+                System.out.println("Introduce os datos do cliente, pulsa * pra cancelar.");
+                nome = Inputs.getString("Nome: ");
+                apelidos = Inputs.getString("Apelidos: ");
+                dni = Inputs.getString("DNI: ");
                 Valida.validaDni(dni);
                 sigue=true;
             } catch (BancoException ex) {
                 sigue = false;
                 System.out.println(ex.getCodigo());
-            }
+            } 
             p = new Persoa(nome, apelidos, dni);
         } while (!sigue);
         return p;
     }
 
-    private void abreConta() {
+    private void abreConta() throws CancelException {
         ContaBancaria conta = null;
         Persoa p = null;
         int[] opts;
-        Object[] datos = new Object[7];
+        String[] datos = new String[7];
         boolean abrirConta = false;
-        String[] opcions = new String[]{"Saldo.", "Numero de conta.", "Tipo de interes.", "Comision de mantemento.", "Maximo descuberto permitido.", "Tipo de interes por descuberto.", "Comision fija por descuberto."};
+        String[] opcions = new String[]{"Saldo.", "Numero de conta.", "Tipo de interes.", "Comision de mantemento.", "Maximo descuberto permitido.", "Tipo de interes por descuberto.", "Comision fija por descuberto.", "Pulsa * pra cancelar."};
         p = novaPersoa();
         do {
             try {
                 opts = getTipo();
-                System.out.println("Introduce os datos da conta.");
-                for (int i = 0; i < opts.length; i++) {
+                System.out.println("Introduce os datos da conta, pulsa * pra sair.");
+                for (int i = 0; i < opts.length-1; i++) {
                     System.out.println(opcions[opts[i]]);
                     datos[opts[i]] = lec.nextLine();
+                    if (datos[opts[i]].charAt(0)=='*') throw new CancelException();
                 }
-                try {
                     switch (tipoConta.charAt(0)) {
                         case 'e' ->
-                            conta = new ContaEmpresa(p, (Double.parseDouble(datos[opts[0]].toString())), (Valida.validaIban((String) datos[opts[1]])), (Double.parseDouble(datos[opts[2]].toString())), (Double.parseDouble(datos[opts[3]].toString())), (Double.parseDouble(datos[opts[4]].toString())), ContaBancaria.TipoConta.EMPRESA);
+                            conta = new ContaEmpresa(p, datos[opts[0]], datos[opts[1]], datos[opts[2]], datos[opts[3]], datos[opts[4]]);
                         case 'p' ->
-                            conta = new ContaPersoal(p, (Double.parseDouble(datos[opts[0]].toString())), (Valida.validaIban((String) datos[opts[1]])), (Double.parseDouble(datos[opts[2]].toString())), ContaBancaria.TipoConta.PERSOAL);
+                            conta = new ContaPersoal(p, datos[opts[0]], datos[opts[1]], datos[opts[2]]);
                         case 'a' ->
-                            conta = new ContaAforro(p, (Double.parseDouble(datos[opts[0]].toString())), (Valida.validaIban((String) datos[opts[1]])), (Double.parseDouble(datos[opts[2]].toString())), ContaBancaria.TipoConta.AFORRO);
+                            conta = new ContaAforro(p, datos[opts[0]], datos[opts[1]], datos[opts[2]]);
                         default -> {
                         }
                     }
-                    abrirConta = banco.abrirConta(conta);
-                } catch (NumberFormatException n) {
-                    throw new BancoException(Error.NONVALIDO, "Asegurate de introducir ben todos os datos");
-                }
+                    abrirConta = banco.abrirConta(conta);               
                 if (!abrirConta) {
                     throw new BancoException(Error.NONVALIDO);
                 }
@@ -165,24 +163,27 @@ public class Principal {
         } while (!abrirConta);
     }
 
-    public int[] getTipo() {
+    public int[] getTipo() throws CancelException {
         char escolle;
         int[] opts = null;
-        Menu m = new Menu("Que tipo de conta desexas crear?", new String[]{"Conta de (E)mpresa", "Conta (P)ersoal", "Conta de (A)forro"}, "epa", Menu.Direccion.HORIZONTAL);
+        Menu m = new Menu("Que tipo de conta desexas crear?", new String[]{"Conta de (E)mpresa", "Conta (P)ersoal", "Conta de (A)forro", "(S)air"}, "epas", Menu.Direccion.HORIZONTAL);
         escolle = m.getOpcion();
         switch (escolle) {
             case 'e' -> {
                 tipoConta = "empresa";
-                opts = new int[]{0, 1, 4, 5, 6
+                opts = new int[]{0, 1, 4, 5, 6, 7
                 };
             }
             case 'p' -> {
                 tipoConta = "persoal";
-                opts = new int[]{0, 1, 3};
+                opts = new int[]{0, 1, 3, 7};
             }
             case 'a' -> {
                 tipoConta = "aforro";
-                opts = new int[]{0, 1, 2};
+                opts = new int[]{0, 1, 2, 7};
+            }
+            case 's'->{
+            throw new CancelException ();
             }
             default -> {
             }

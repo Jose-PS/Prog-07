@@ -5,6 +5,9 @@
 package Banco;
 
 import Persoa.Persoa;
+import Utils.BancoException;
+import Utils.Inputs;
+import Utils.Valida;
 
 /**
  *
@@ -14,9 +17,9 @@ public class ContaPersoal extends ContaCorrente {
 
     private double comisionMant;
 
-    public ContaPersoal(Persoa titular, double saldo, String iban, double comisionMant, TipoConta tipoConta) {
-        super(titular, saldo, iban, tipoConta);
-        this.comisionMant = comisionMant;
+    public ContaPersoal(Persoa titular, String saldo, String iban, String comisionMant) throws BancoException {
+        super(titular, Inputs.getDouble(saldo), Valida.validaIban(iban), TipoConta.PERSOAL);
+        this.comisionMant = Inputs.getDouble(comisionMant);
     }
 
     

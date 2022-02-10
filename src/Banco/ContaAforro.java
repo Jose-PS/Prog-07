@@ -5,6 +5,9 @@
 package Banco;
 
 import Persoa.Persoa;
+import Utils.BancoException;
+import Utils.Inputs;
+import Utils.Valida;
 
 /**
  *
@@ -14,15 +17,15 @@ public class ContaAforro extends ContaBancaria {
 
     private double tipoInteres;
 
-    public ContaAforro(Persoa titular, double saldo, String iban, double tipoInteres, TipoConta tipoConta) {
-        super(titular, saldo, iban, tipoConta);
-        this.tipoInteres = tipoInteres;
+    public ContaAforro(Persoa titular, String saldo, String iban, String tipoInteres) throws BancoException {
+        super(titular, Inputs.getDouble(saldo), Valida.validaIban(iban), TipoConta.AFORRO);
+        this.tipoInteres = Inputs.getDouble(tipoInteres);
     }
 
     @Override
     public String devolverInfoString() {
         return "Titular: " + titular.devolverInfoString() + "\n"
-                + "Numero: " + iban + ", Tipo Interes: " + tipoInteres+ "Tipo de conta: " + tipoConta+", Saldo: "+saldo;
+                + "Numero: " + iban + ", Tipo Interes: " + tipoInteres + "Tipo de conta: " + tipoConta + ", Saldo: " + saldo;
     }
 
 }

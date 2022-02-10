@@ -5,6 +5,9 @@
 package Banco;
 
 import Persoa.Persoa;
+import Utils.BancoException;
+import Utils.Inputs;
+import Utils.Valida;
 
 /**
  *
@@ -16,11 +19,11 @@ public class ContaEmpresa extends ContaCorrente {
     private double maxDesc;
     private double comisionDesc;
 
-    public ContaEmpresa(Persoa titular, double saldo, String iban, double maxDesc, double interesDesc, double comisionDesc, TipoConta tipoConta) {
-        super(titular, saldo, iban, tipoConta);
-        this.interesDesc = interesDesc;
-        this.maxDesc = maxDesc;
-        this.comisionDesc = comisionDesc;
+    public ContaEmpresa(Persoa titular, String saldo, String iban, String maxDesc, String interesDesc, String comisionDesc) throws BancoException {
+        super(titular, Inputs.getDouble(saldo), Valida.validaIban(iban), TipoConta.EMPRESA);
+        this.interesDesc = Inputs.getDouble(interesDesc);
+        this.maxDesc = Inputs.getDouble(maxDesc);
+        this.comisionDesc = Inputs.getDouble(comisionDesc);
     }
 
     

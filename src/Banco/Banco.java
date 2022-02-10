@@ -18,18 +18,48 @@ public class Banco {
     private int pos;
 
     /**
-     * Inserta unha conta bancaria no banco. Maximo 100 contas.
+     * Inserta unha conta bancaria no banco.Maximo 100 contas.
      *
      * @param cb
      * @return Devolve true ou false en funcion de se tivo exito.
+     * @throws Utils.BancoException
      */
-    public boolean abrirConta(ContaBancaria cb) {
+    public boolean abrirConta(ContaBancaria cb) throws BancoException  {
+        String iban = cb.getIban();
         if (pos >= contas.length) {
+            return false;
+        }
+        if (buscaConta(iban).equals(cb)) {
             return false;
         }
         contas[pos] = cb;
         pos++;
         return true;
+    }
+
+    public ContaBancaria buscaConta(String iban) throws BancoException {
+        ContaBancaria cv = null;
+        try {
+            for (int i = 0; i < pos; i++) {
+                if (contas[i].getIban().equals(iban)) {
+                    cv = contas[i];
+                    return cv;
+                }
+            }
+        } catch (NullPointerException n) {
+            throw new BancoException(Error.NONEXISTE);
+        }
+        return null;
+    }
+    
+    public boolean actualizaConta (ContaBancaria cv){
+        for (int i = 0; i < pos; i++) {
+            if (contas[i].getIban().equals(cv.getIban())){
+            contas[i]=cv;
+            return true;
+            }
+        }
+    return false;
     }
 
     /**
@@ -59,16 +89,15 @@ public class Banco {
      */
     public String informacionConta(String iban) throws BancoException {
         Valida.validaIban(iban);
+        ContaBancaria cv = null;
+        String info;
+        cv = buscaConta(iban);
         try {
-            for (int i = 0; i < pos; i++) {
-                if (contas[i].getIban().equals(iban)) {
-                    return contas[i].devolverInfoString();
-                }
-            }
+            info = cv.devolverInfoString();
         } catch (NullPointerException n) {
             throw new BancoException(Error.NONEXISTE);
         }
-        return null;
+        return info;
     }
 
     /**
@@ -81,16 +110,13 @@ public class Banco {
      */
     public boolean ingresoConta(String iban, double cant) throws BancoException {
         Valida.validaIban(iban);
+        ContaBancaria cv;
         if (cant < 0) {
             throw new BancoException(Error.NONVALIDO, "Introduce un valor positivo");
         }
-        for (int i = 0; i < pos; i++) {
-            if (contas[i].getIban().equals(iban)) {
-                contas[i].setSaldo(contas[i].getSaldo() + cant);
-                return true;
-            }
-        }
-        return false;
+        cv = buscaConta(iban);
+        cv.setSaldo(cv.getSaldo() + cant);
+        return actualizaConta(cv);
     }
 
     /**
@@ -102,17 +128,15 @@ public class Banco {
      * @throws Utils.BancoException
      */
     public boolean retiradaConta(String iban, double cant) throws BancoException {
-        Valida.validaIban(iban);
+         Valida.validaIban(iban);
+        ContaBancaria cv;
         if (cant < 0) {
             throw new BancoException(Error.NONVALIDO, "Introduce un valor positivo");
         }
-        for (int i = 0; i < pos; i++) {
-            if (contas[i].getIban().equals(iban)) {
-                contas[i].setSaldo(contas[i].getSaldo() - cant);
-                return true;
-            }
-        }
-        return false;
+        cv = buscaConta(iban);
+        cv.setSaldo(cv.getSaldo() - cant);
+        if (cv.getSaldo()<0)return false;
+        return actualizaConta(cv);
     }
 
     /**
@@ -124,12 +148,7 @@ public class Banco {
      */
     public double obterSaldo(String iban) throws BancoException {
         Valida.validaIban(iban);
-        for (int i = 0; i < pos; i++) {
-            if (contas[i].getIban().equals(iban)) {
-                return contas[i].getSaldo();
-            }
-        }
-        return -1;
+        return buscaConta(iban).getSaldo();
     }
 
 }
