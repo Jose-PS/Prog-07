@@ -52,6 +52,12 @@ public class Banco {
         return null;
     }
     
+    /**
+     * Recibe un obxeto contaBancaria e a sobreescribe no banco
+     * @param cv
+     * @return Devolve true ou false dependendo de se saiu ben ou non.
+     */
+    
     public boolean actualizaConta (ContaBancaria cv){
         for (int i = 0; i < pos; i++) {
             if (contas[i].getIban().equals(cv.getIban())){
