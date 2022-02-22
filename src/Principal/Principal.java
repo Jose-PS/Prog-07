@@ -28,7 +28,7 @@ public class Principal {
         String iban;
         String lista[] = null;
         double cant;
-        boolean estado;
+        boolean estado = false;
         double saldo;
         Menu m = new Menu("Banco do Hio, escolle unha opcion.", new String[]{"(A)brir nova conta.", "(V)er listado de contas.", "(O)bter datos dunha conta.", "(I)ngresar efectivo en conta.", "(R)etirar efectivo de conta.", "(C)onsultar saldo en conta.", "(S)air."}, "avoircs");
         do {
@@ -56,41 +56,43 @@ public class Principal {
                     }
                     case 'i' -> {
                         try {
-                        System.out.println("Introduce o IBAN: ");
-                        iban = lec.nextLine();
-                        System.out.println("Introduce a cantidade: ");
-                        cant = Double.parseDouble(lec.nextLine());
-                        estado = banco.ingresoConta(iban, cant);
-                        if (estado) {
-                            System.out.println("Operacion realizada con exito!");
-                        } else {
-                            System.out.println("Houbo un erro na operacion.");
-                        }
+                            System.out.println("Introduce o IBAN: ");
+                            iban = lec.nextLine();
+                            System.out.println("Introduce a cantidade: ");
+                            cant = Double.parseDouble(lec.nextLine());
+                            estado = banco.ingresoConta(iban, cant);
+                            if (estado) {
+                                System.out.println("Operacion realizada con exito!");
+                            } else {
+                                System.out.println("Houbo un erro na operacion.");
+                            }
                         } catch (NumberFormatException n) {
-                        throw new BancoException (Error.NONVALIDO);
+                            throw new BancoException(Error.NONVALIDO);
                         }
                     }
                     case 'r' -> {
                         try {
-                        System.out.println("Introduce o IBAN: ");
-                        iban = lec.nextLine();
-                        System.out.println("Introduce a cantidade a retirar: ");
-                        cant = Double.parseDouble(lec.nextLine());
-                        estado = banco.retiradaConta(iban, cant);
-                        if (estado) {
-                            System.out.println("Operacion realizada con exito!");
-                        } else {
-                            System.out.println("Houbo un erro na operacion.");
+                            System.out.println("Introduce o IBAN: ");
+                            iban = lec.nextLine();
+                            System.out.println("Introduce a cantidade a retirar: ");
+                            cant = Double.parseDouble(lec.nextLine());
+                            estado = banco.retiradaConta(iban, cant);
+                            if (estado) {
+                                System.out.println("Operacion realizada con exito!");
+                            } else {
+                                System.out.println("Houbo un erro na operacion.");
+                            }
+                        } catch (NumberFormatException n) {
+                            throw new BancoException(Error.NONVALIDO);
                         }
-                    } catch (NumberFormatException n){
-                        throw new BancoException (Error.NONVALIDO);
-                    }
                     }
                     case 'c' -> {
                         System.out.println("Introduce o IBAN da conta: ");
                         saldo = banco.obterSaldo(lec.nextLine());
-                        if (saldo < 0) throw new BancoException (Error.NONEXISTE);
-                        System.out.println("O saldo da conta e: "+saldo);
+                        if (saldo < 0) {
+                            throw new BancoException(Error.NONEXISTE);
+                        }
+                        System.out.println("O saldo da conta e: " + saldo);
                     }
                     case 's' -> {
                     }
@@ -116,12 +118,12 @@ public class Principal {
                 apelidos = Inputs.getString("Apelidos: ");
                 dni = Inputs.getString("DNI: ");
                 Valida.validaDni(dni);
+                p = new Persoa(nome, apelidos, dni);
                 sigue=true;
             } catch (BancoException ex) {
-                sigue = false;
                 System.out.println(ex.getCodigo());
-            } 
-            p = new Persoa(nome, apelidos, dni);
+                sigue=false;
+            }
         } while (!sigue);
         return p;
     }
@@ -138,22 +140,24 @@ public class Principal {
             try {
                 opts = getTipo();
                 System.out.println("Introduce os datos da conta, pulsa * pra sair.");
-                for (int i = 0; i < opts.length-1; i++) {
+                for (int i = 0; i < opts.length - 1; i++) {
                     System.out.println(opcions[opts[i]]);
                     datos[opts[i]] = lec.nextLine();
-                    if (datos[opts[i]].charAt(0)=='*') throw new CancelException();
-                }
-                    switch (tipoConta.charAt(0)) {
-                        case 'e' ->
-                            conta = new ContaEmpresa(p, datos[opts[0]], datos[opts[1]], datos[opts[2]], datos[opts[3]], datos[opts[4]]);
-                        case 'p' ->
-                            conta = new ContaPersoal(p, datos[opts[0]], datos[opts[1]], datos[opts[2]]);
-                        case 'a' ->
-                            conta = new ContaAforro(p, datos[opts[0]], datos[opts[1]], datos[opts[2]]);
-                        default -> {
-                        }
+                    if (datos[opts[i]].charAt(0) == '*') {
+                        throw new CancelException();
                     }
-                    abrirConta = banco.abrirConta(conta);               
+                }
+                switch (tipoConta.charAt(0)) {
+                    case 'e' ->
+                        conta = new ContaEmpresa(p, datos[opts[0]], datos[opts[1]], datos[opts[2]], datos[opts[3]], datos[opts[4]]);
+                    case 'p' ->
+                        conta = new ContaPersoal(p, datos[opts[0]], datos[opts[1]], datos[opts[2]]);
+                    case 'a' ->
+                        conta = new ContaAforro(p, datos[opts[0]], datos[opts[1]], datos[opts[2]]);
+                    default -> {
+                    }
+                }
+                abrirConta = banco.abrirConta(conta);
                 if (!abrirConta) {
                     throw new BancoException(Error.NONVALIDO);
                 }
@@ -182,8 +186,8 @@ public class Principal {
                 tipoConta = "aforro";
                 opts = new int[]{0, 1, 2, 7};
             }
-            case 's'->{
-            throw new CancelException ();
+            case 's' -> {
+                throw new CancelException();
             }
             default -> {
             }

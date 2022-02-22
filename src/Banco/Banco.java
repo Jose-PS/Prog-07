@@ -29,9 +29,6 @@ public class Banco {
         if (pos >= contas.length) {
             return false;
         }
-        if (buscaConta(iban).equals(cb)) {
-            return false;
-        }
         contas[pos] = cb;
         pos++;
         return true;

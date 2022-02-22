@@ -5,6 +5,8 @@
 package Persoa;
 
 import Interfaz.Imprimible;
+import Utils.BancoException;
+import Utils.Valida;
 
 /**
  *
@@ -16,7 +18,8 @@ public class Persoa implements Imprimible {
     private String apellidos;
     private String dni;
 
-    public Persoa(String nombre, String apellidos, String dni) {
+    public Persoa(String nombre, String apellidos, String dni) throws BancoException {
+        Valida.validaDni(dni);
         this.nombre = nombre;
         this.apellidos = apellidos;
         this.dni = dni;
