@@ -10,7 +10,6 @@ import Utils.BancoException;
 import Utils.CancelException;
 import Utils.Error;
 import Utils.Inputs;
-import Utils.Valida;
 import java.util.Scanner;
 
 /**
@@ -117,12 +116,10 @@ public class Principal {
                 nome = Inputs.getString("Nome: ");
                 apelidos = Inputs.getString("Apelidos: ");
                 dni = Inputs.getString("DNI: ");
-                Valida.validaDni(dni);
                 p = new Persoa(nome, apelidos, dni);
                 sigue=true;
             } catch (BancoException ex) {
                 System.out.println(ex.getCodigo());
-                sigue=false;
             }
         } while (!sigue);
         return p;

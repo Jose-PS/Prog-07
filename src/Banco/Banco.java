@@ -24,16 +24,27 @@ public class Banco {
      * @return Devolve true ou false en funcion de se tivo exito.
      * @throws Utils.BancoException
      */
-    public boolean abrirConta(ContaBancaria cb) throws BancoException  {
-        String iban = cb.getIban();
+    public boolean abrirConta(ContaBancaria cb) throws BancoException {
         if (pos >= contas.length) {
             return false;
+        } else if (buscaConta(cb.getIban()) == null) {
+            contas[pos] = cb;
+            pos++;
+        } else {
+            return false;
         }
-        contas[pos] = cb;
-        pos++;
         return true;
     }
 
+    /**
+     * Recibe un IBAN e busca unha conta.
+     *
+     * @param iban
+     * @return Devolve un obxeto ContaBancaria no caso de atopala ou null se non
+     * a atopa.
+     * @throws BancoException
+     *
+     */
     public ContaBancaria buscaConta(String iban) throws BancoException {
         ContaBancaria cv = null;
         try {
@@ -48,21 +59,21 @@ public class Banco {
         }
         return null;
     }
-    
+
     /**
      * Recibe un obxeto contaBancaria e a sobreescribe no banco
+     *
      * @param cv
      * @return Devolve true ou false dependendo de se saiu ben ou non.
      */
-    
-    public boolean actualizaConta (ContaBancaria cv){
+    public boolean actualizaConta(ContaBancaria cv) {
         for (int i = 0; i < pos; i++) {
-            if (contas[i].getIban().equals(cv.getIban())){
-            contas[i]=cv;
-            return true;
+            if (contas[i].getIban().equals(cv.getIban())) {
+                contas[i] = cv;
+                return true;
             }
         }
-    return false;
+        return false;
     }
 
     /**
@@ -131,14 +142,16 @@ public class Banco {
      * @throws Utils.BancoException
      */
     public boolean retiradaConta(String iban, double cant) throws BancoException {
-         Valida.validaIban(iban);
+        Valida.validaIban(iban);
         ContaBancaria cv;
         if (cant < 0) {
             throw new BancoException(Error.NONVALIDO, "Introduce un valor positivo");
         }
         cv = buscaConta(iban);
         cv.setSaldo(cv.getSaldo() - cant);
-        if (cv.getSaldo()<0)return false;
+        if (cv.getSaldo() < 0) {
+            return false;
+        }
         return actualizaConta(cv);
     }
 
