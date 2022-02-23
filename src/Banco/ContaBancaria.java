@@ -5,7 +5,6 @@
 package Banco;
 
 import Interfaz.Imprimible;
-import Persoa.Persoa;
 
 /**
  *

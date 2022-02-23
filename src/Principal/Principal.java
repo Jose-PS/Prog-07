@@ -5,7 +5,7 @@ import Banco.ContaAforro;
 import Banco.ContaBancaria;
 import Banco.ContaEmpresa;
 import Banco.ContaPersoal;
-import Persoa.Persoa;
+import Banco.Persoa;
 import Utils.BancoException;
 import Utils.CancelException;
 import Utils.Error;

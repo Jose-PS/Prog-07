@@ -4,8 +4,6 @@
  */
 package Banco;
 
-import Persoa.Persoa;
-
 /**
  *
  * @author DAW

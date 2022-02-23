@@ -4,7 +4,6 @@
  */
 package Banco;
 
-import Persoa.Persoa;
 import Utils.BancoException;
 import Utils.Inputs;
 import Utils.Valida;
